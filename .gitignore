@@ -1,0 +1,4 @@
+*.pyc
+*~
+ckanext_edc.egg-info/*
+dist/*
