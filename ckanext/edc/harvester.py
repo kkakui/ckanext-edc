@@ -95,6 +95,8 @@ class EDCHarvester(DCATJSONHarvester):
             datasets = doc
         elif isinstance(doc, dict):
             datasets = doc.get('dcat:dataset', [])
+            if not isinstance(datasets, list):
+                datasets = [datasets]
             dataservice = doc.get('dcat:service')
         else:
             raise ValueError('Wrong JSON object')
