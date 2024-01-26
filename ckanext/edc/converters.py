@@ -12,5 +12,8 @@ def fix_edc_dcat(edc_dcat_dict):
     edc_dcat_dict['dcat:distribution']['format'] = edc_dcat_dict.get('contentType')
     edc_dcat_dict['distribution'] = []
     edc_dcat_dict['distribution'].append(edc_dcat_dict.pop('dcat:distribution'))
+    keyword = edc_dcat_dict.get('keyword')
+    if keyword and not isinstance(keyword, list):
+        edc_dcat_dict['keyword'] = [keyword]
     log.debug('fixed EDC DCAT: %s', edc_dcat_dict)
     return edc_dcat_dict
