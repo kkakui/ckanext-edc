@@ -4,6 +4,7 @@ import requests
 import datetime
 import uuid
 import re
+import urllib
 from ckan import plugins
 from ckanext.dcat.harvesters._json import DCATJSONHarvester
 from ckanext.dcat.harvesters.base import DCATHarvester
@@ -143,12 +144,16 @@ class EDCHarvester(DCATJSONHarvester):
         if status == 'new':
             today = datetime.datetime.now(datetime.timezone.utc).date().isoformat()
             package_dict['extras'].append({'key': 'issued', 'value': today})
-        connector_dsp_endpoint = self.config.get('connector_dsp_endpoint')
-        package_dict['extras'].append({'key': 'caddec_provider_id', 'value': connector_dsp_endpoint})
-        dataset_id = self._generate_uuid_for_dataset(connector_dsp_endpoint, package_dict.get('name'))
+        connector_dsp_url = dcat_dict.get('dcat:service').get('dct:endpointUrl')
+        provider_id = '://'.join(urllib.parse.urlparse(connector_dsp_url)[:2])
+        package_dict['extras'].append({'key': 'caddec_provider_id', 'value': provider_id})
+        dataset_id = self._generate_uuid_for_dataset(connector_dsp_url, package_dict.get('name'))
         package_dict['extras'].append({'key': 'caddec_dataset_id_for_detail', 'value': dataset_id})
+        connector_public_url = self.config.get('connector_public_url')
         explain_url = self._get_explain_url(dcat_dict) or self.config.get('default_explain_url', utils.catalog_uri())
         for resource in package_dict['resources']:
+            if connector_public_url:
+                resource['url'] = connector_public_url
             resource['explain_url'] = explain_url
             resource['caddec_required'] = 'required'
             resource['caddec_resource_type'] = 'file/http'
