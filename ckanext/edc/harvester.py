@@ -110,6 +110,9 @@ class EDCHarvester(DCATJSONHarvester):
             # Get identifier
             guid = dataset.get('id')
             if not guid:
+                # try old format
+                guid = dataset.get('edc:id')
+            if not guid:
                 # This is bad, any ideas welcomed
                 guid = sha1(as_string).hexdigest()
 

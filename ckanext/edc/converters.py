@@ -5,6 +5,11 @@ import logging
 log = logging.getLogger(__name__)
 
 def fix_edc_dcat(edc_dcat_dict):
+    if 'edc:id' in edc_dcat_dict:
+        # old format
+        for key in ('id', 'name', 'description', 'contentType', 'keyword'):
+            if 'edc:'+key in edc_dcat_dict:
+                edc_dcat_dict[key] = edc_dcat_dict.pop('edc:'+key)
     edc_dcat_dict['identifier'] = edc_dcat_dict.get('id')
     edc_dcat_dict['title'] = edc_dcat_dict.get('name')
     edc_dcat_dict['dcat:distribution']['title'] = edc_dcat_dict.get('id')
